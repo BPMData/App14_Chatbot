@@ -31,6 +31,7 @@ class ChatBotWindow(QMainWindow):
         self.button = QPushButton("Submit query to ChatBot", self)
         self.button.setStyleSheet("background-color: #808080; color: black;")
         self.button.setGeometry(10, 380, 481, 20)
+        self.button.clicked.connect(self.send_messsage)
 
         # layout = QVBoxLayout()
         # layout.addWidget(self.chat_area)
@@ -42,6 +43,10 @@ class ChatBotWindow(QMainWindow):
         # central_widget.setLayout(layout)
 
         self.show()
+
+    def send_messsage(self):
+        user_input = self.input_field.text().strip()
+        print(user_input)
 
 
 app = QApplication(sys.argv)
