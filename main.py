@@ -1,5 +1,6 @@
 import sys
-from PyQt6.QtCore import Qt, QSize,pyqtSignal
+
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget,\
     QTableWidgetItem, QDialog, QVBoxLayout, QLineEdit, QPushButton, QComboBox, \
@@ -9,20 +10,15 @@ from backend import ChatBot
 import threading
 
 
-class TextEdit(QTextEdit):
-    returnPressed = pyqtSignal()
-
-    def keyPressEvent(self, event):
-        super().keyPressEvent(event)
-        if event.key() in (Qt.Key_Enter, Qt.Key_Return):
-            self.returnPressed.emit()  # Emit signal when Enter or Return is pressed
-
 
 class ChatBotWindow(QMainWindow):
+    responseReceived = pyqtSignal(str)  # Define a new signal
+
     def __init__(self):
         super().__init__()
 
         self.chatbot = ChatBot()
+        self.responseReceived.connect(self.append_response)
 
         self.setWindowTitle("BPM's ChatBot")
         self.setGeometry(200, 200, 500, 500)
@@ -39,12 +35,12 @@ class ChatBotWindow(QMainWindow):
         font_metrics = self.input_field.fontMetrics()
         line_height = font_metrics.lineSpacing()
         self.input_field.setFixedHeight(4 * line_height)
-        self.input_field.returnPressed.connect(self.send_messsage)
+        self.input_field.returnPressed.connect(self.send_message)
 
         # Add the "Submit query to ChatBot" button:
         self.button = QPushButton("Submit query to ChatBot", self)
         self.button.setStyleSheet("background-color: #808080; color: black;")
-        self.button.clicked.connect(self.send_messsage)
+        self.button.clicked.connect(self.send_message)
 
 
         layout = QVBoxLayout()
@@ -58,7 +54,7 @@ class ChatBotWindow(QMainWindow):
 
         self.show()
 
-    def send_messsage(self):
+    def send_message(self):
         try:
                 user_input = self.input_field.toPlainText().strip()
                 if not user_input:
@@ -75,11 +71,32 @@ class ChatBotWindow(QMainWindow):
             return "An error occured while getting the response."
     def get_bot_response(self, user_input):
         response = self.chatbot.get_response(user_input, tokens=1000)
-        self.chat_area.append(f"<p style='color:  #FFC300'>gpt-3.5-turbo: {response}</p>")
+        self.responseReceived.emit(response)
 
+    def append_response(self, response):
+       self.chat_area.append(f"<p style='color:  #FFC300'>gpt-3.5-turbo: {response}</p>")
 
+class TextEdit(QTextEdit):
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+
+    returnPressed = pyqtSignal()
+
+    def keyPressEvent(self, qKeyEvent):
+        super().keyPressEvent(qKeyEvent)
+        try:
+            if qKeyEvent.key() in (Qt.Key.Key_Enter, Qt.Key.Key_Return):
+                # ChatBot.connect(self.send_message)
+                self.returnPressed.emit()
+
+        except Exception as e:
+            print(f"An error occured: {e}")
+            QMessageBox.warning(self, "Error", str(e))
+            return "An error occured while getting the response."
 
 app = QApplication(sys.argv)
 window = ChatBotWindow()
 window.show()
+print(type(Qt.Key.Key_Enter))
+print(type(Qt.Key.Key_Return))
 sys.exit(app.exec())
