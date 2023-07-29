@@ -1,6 +1,7 @@
 from personas import (coder, food_historian, cultural_geographer_linguistics,
                       early_european_historian, cultural_anthro_subtext,
-                      food_blogger_recipe_suggestions, token_2000_question)
+                      food_blogger_recipe_suggestions, token_2000_question,
+                      summarizer, mind_question)
 
 import openai
 import os
@@ -57,12 +58,23 @@ sample_query_food = ('Can you explain the origins and rise to popularity of the 
                      'helped popularize it, and give any relevant context or '
                      'references necessary to fully understand the subject.')
 
+best_summary_prompt = '''Hello, AI. My goal is to reduce the text I'm about to present to the absolute minimum number of tokens necessary for another Large Language Model AI to understand it. Human readability is not a requirement. Please compress this information as much as possible, focusing solely on preserving the core content that another LLM would need to reconstruct the meaning. The text for condensing begins after the triple quotes: 
+```
+'''
+
+test_query = ' '.join([summarizer, sample_query_food])
+test_query2 = ' '.join([summarizer, mind_question])
+
+def summarize(summation_prompt, response):
+    summarizeit = summation_prompt + ' ' + response
+    return summarizeit
+
 if __name__ == "__main__":
     chatbot = ChatBot()
     # response = chatbot.get_response('gpt-3.5-turbo', 2000, sample_query_code, data_scientist)
     # print(response)
     user_input = "What's the most popular way of serving chicken?"
-    response = chatbot.get_response(user_query=token_2000_question, persona=data_scientist, tokens=100)
+    response = chatbot.get_response(user_query=summarize(summarizer, sample_query_food))
     print(response)
 
 

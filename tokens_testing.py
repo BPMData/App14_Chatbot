@@ -1,6 +1,7 @@
 from personas import (coder, food_historian, cultural_geographer_linguistics,
                       early_european_historian, cultural_anthro_subtext,
-                      food_blogger_recipe_suggestions, token_2000_question)
+                      food_blogger_recipe_suggestions, token_2000_question,
+                      summarizer, mind_question)
 
 import openai
 import os
@@ -9,31 +10,37 @@ class ChatBot:
     def __init__(self):
         openai.api_key = os.getenv('OpenAI_Key01')
 
-    def get_response(self, user_query, model='gpt-3.5-turbo', temperature=0.7, tokens=2000, persona=None):
+    def get_response(self, user_query, model='gpt-3.5-turbo', temperature=0.7, persona=None):
         if persona is not None:
-            response = openai.ChatCompletion.create(
-                model=model, # gpt-3.5p-turbo-16k if you want the 16k context, which I don't, as it costs twice as much.
-                messages=[
-                    {'role': 'user', 'content': user_query},
-                    {'role': 'system', 'content': persona}
-                ],
-                max_tokens=tokens,
-                temperature = 0.7,
-                user='bpmdata'
-            )
-            return response.choices[0].message.content
+            try:
+                response = openai.ChatCompletion.create(
+                    model=model,
+                    messages=[
+                        {'role': 'user', 'content': user_query},
+                        {'role': 'system', 'content': persona}
+                    ],
+                    max_tokens=6000,
+                    temperature = 0.7,
+                    user='bpmdata'
+                )
+                return response.choices[0].message.content
+            except openai.error.InvalidRequestError:
+                print("NO CAN DO STAR FOX")
         else:
-            response = openai.ChatCompletion.create(
-                model=model,
-                # gpt-3.5p-turbo-16k if you want the 16k context, which I don't, as it costs twice as much.
-                messages=[
-                    {'role': 'user', 'content': user_query}
-                ],
-                max_tokens=tokens,
-                temperature=0.7,
-                user='bpmdata'
-            )
-            return response.choices[0].message.content
+            try:
+                response = openai.ChatCompletion.create(
+                    model=model,
+                    # gpt-3.5p-turbo-16k if you want the 16k context, which I don't, as it costs twice as much.
+                    messages=[
+                        {'role': 'user', 'content': user_query}
+                    ],
+                    max_tokens=6000,
+                    temperature=0.7,
+                    user='bpmdata'
+                )
+                return response.choices[0].message.content
+            except openai.error.InvalidRequestError:
+                print("NO CAN DO STAR FOX")
 
 
 data_scientist = ('Respond as if you were a highly knowledgeable coder in Python, SQL, R, '
@@ -57,12 +64,16 @@ sample_query_food = ('Can you explain the origins and rise to popularity of the 
                      'helped popularize it, and give any relevant context or '
                      'references necessary to fully understand the subject.')
 
+
+test_query = ' '.join([summarizer, mind_question])
+
+
 if __name__ == "__main__":
     chatbot = ChatBot()
     # response = chatbot.get_response('gpt-3.5-turbo', 2000, sample_query_code, data_scientist)
     # print(response)
     user_input = "What's the most popular way of serving chicken?"
-    response = chatbot.get_response(user_query=token_2000_question, persona=data_scientist, tokens=100)
+    response = chatbot.get_response(user_query=test_query, persona=None)
     print(response)
 
 

@@ -106,3 +106,8 @@ Global Influence and Culinary Exchanges: French cuisine has had a profound impac
 
 In summary, the popularity and prominence of clear broths in France can be attributed to their historical development, alignment with the principles of French culinary tradition, the influence of renowned culinary figures, their association with fine dining and banquets, and their role in global culinary exchanges. Together, these factors have enriched the appreciation of clear broths as a culinary marvel in both traditional and modern haute cuisine.
 What's one example of a country that doesn't mind if their broth is not crystal clear?'''
+
+summarizer = '''
+Hello, AI. My goal is to reduce the text I'm about to present to the absolute minimum number of tokens necessary for another Large Language Model AI to understand it. Human readability is not a requirement. Please compress this information as much as possible, focusing solely on preserving the core content that another LLM would need to reconstruct the meaning. The text for condensing begins after the triple hashtags: 
+\n ### \n 
+'''
